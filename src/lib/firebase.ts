@@ -11,25 +11,15 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase only on client-side
-let app: FirebaseApp | null = null;
+// Initialize Firebase
+const app: FirebaseApp = !getApps().length
+  ? initializeApp(firebaseConfig)
+  : getApps()[0];
 
-if (typeof window !== 'undefined') {
-  try {
-    if (!getApps().length) {
-      app = initializeApp(firebaseConfig);
-    } else {
-      app = getApps()[0];
-    }
-  } catch (error) {
-    console.error('Firebase initialization error:', error);
-  }
-}
-
-// Initialize Auth only on client-side
-export const auth: Auth | null = app ? getAuth(app) : null;
+// Initialize Auth (client-side only usage)
+export const auth: Auth = getAuth(app);
 
 // Initialize Firestore (works on both client and server)
-export const db: Firestore = app ? getFirestore(app) : getFirestore(initializeApp(firebaseConfig));
+export const db: Firestore = getFirestore(app);
 
 export default app;
