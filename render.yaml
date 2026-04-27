@@ -7,4 +7,8 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 20
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        value: https://flrsuvqmyrpmmbqsxnqu.supabase.co
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZscnN1dnFteXJwbW1icXN4bnF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTc2NDMsImV4cCI6MjA5Mjg3MzY0M30.D0_nYfbkcUM4pVdf4AcWdov8l01V2JK3kQrwsRkOt2k
     plan: free
