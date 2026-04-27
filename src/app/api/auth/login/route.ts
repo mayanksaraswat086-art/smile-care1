@@ -1,49 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 
 export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json();
-    
+
     if (!email || !password) {
       return NextResponse.json({ success: false, error: 'Email and password are required' }, { status: 400 });
     }
-    
-    // Check if Supabase is configured
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      console.error("Supabase ENV missing");
-      return NextResponse.json({ 
-        success: false, 
-        error: 'Server configuration error' 
-      }, { status: 500 });
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseKey) {
+      return NextResponse.json({ success: false, error: 'Server configuration error' }, { status: 500 });
     }
-    
-    // Sign in with Supabase Auth
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-      return NextResponse.json({ 
-        success: false, 
-        error: error.message || 'Invalid credentials' 
-      }, { status: 401 });
+      return NextResponse.json({ success: false, error: error.message }, { status: 401 });
     }
 
-    // Return the session token
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       data: {
         token: data.session.access_token,
         email: data.user.email,
       }
     });
+
   } catch (error: any) {
     console.error('Login error:', error);
-    return NextResponse.json({ 
-      success: false, 
-      error: 'Login failed' 
-    }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Login failed' }, { status: 500 });
   }
 }
