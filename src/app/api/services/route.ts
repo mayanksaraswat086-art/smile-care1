@@ -8,6 +8,10 @@ const SERVICES_COLLECTION = 'services';
 // GET all services
 export async function GET() {
   try {
+    if (!db) {
+      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
+    }
+
     const servicesRef = collection(db, SERVICES_COLLECTION);
     const q = query(servicesRef, orderBy('createdAt', 'desc'));
     const snapshot = await getDocs(q);
@@ -35,6 +39,10 @@ export async function GET() {
 // POST create new service
 export async function POST(request: NextRequest) {
   try {
+    if (!db) {
+      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
+    }
+
     const body = await request.json();
     const { name, category, duration, price, description, popular, color, urgent } = body;
     

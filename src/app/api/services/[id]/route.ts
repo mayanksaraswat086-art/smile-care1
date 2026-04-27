@@ -10,6 +10,10 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    if (!db) {
+      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
+    }
+
     const { id } = await params;
     const body = await request.json();
     
@@ -40,6 +44,10 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    if (!db) {
+      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
+    }
+
     const { id } = await params;
     
     const serviceRef = doc(db, SERVICES_COLLECTION, id);

@@ -8,6 +8,10 @@ const DENTISTS_COLLECTION = 'dentists';
 // GET all dentists
 export async function GET() {
   try {
+    if (!db) {
+      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
+    }
+
     const dentistsRef = collection(db, DENTISTS_COLLECTION);
     const q = query(dentistsRef, orderBy('createdAt', 'desc'));
     const snapshot = await getDocs(q);
@@ -35,6 +39,10 @@ export async function GET() {
 // POST create new dentist
 export async function POST(request: NextRequest) {
   try {
+    if (!db) {
+      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
+    }
+
     const body = await request.json();
     const { name, title, specialization, experience, languages, bio, photo, photoAlt, badge, badgeColor, nextSlot, education, certifications, achievements, about, services, clinicHours, rating, reviewCount } = body;
     

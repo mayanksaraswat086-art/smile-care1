@@ -8,18 +8,13 @@ const APPOINTMENTS_COLLECTION = 'appointments';
 // GET all appointments
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const patientEmail = searchParams.get('patientEmail');
-    
-    const appointmentsRef = collection(db, APPOINTMENTS_COLLECTION);
-    let q;
-    
-    if (patientEmail) {
-      q = query(appointmentsRef, where('email', '==', patientEmail), orderBy('createdAt', 'desc'));
-    } else {
-      q = query(appointmentsRef, orderBy('createdAt', 'desc'));
+    if (!db) {
+      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
     }
-    
+
+    const { searchParams } = new URL(request.url);
+    const appointmentsRef = collection(db, APPOINTMENTS_COLLECTION);
+    const q = query(appointmentsRef, orderBy('createdAt', 'desc'));
     const snapshot = await getDocs(q);
     
     const appointments = snapshot.docs.map(doc => ({
@@ -37,6 +32,10 @@ export async function GET(request: NextRequest) {
 // POST create new appointment
 export async function POST(request: NextRequest) {
   try {
+    if (!db) {
+      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
+    }
+
     const body = await request.json();
     const { 
       service, 

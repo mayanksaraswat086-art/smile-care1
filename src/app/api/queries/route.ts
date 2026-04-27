@@ -8,6 +8,10 @@ const QUERIES_COLLECTION = 'queries';
 // GET all queries
 export async function GET() {
   try {
+    if (!db) {
+      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
+    }
+
     const queriesRef = collection(db, QUERIES_COLLECTION);
     const q = query(queriesRef, orderBy('createdAt', 'desc'));
     const snapshot = await getDocs(q);
@@ -27,6 +31,10 @@ export async function GET() {
 // POST create new query
 export async function POST(request: NextRequest) {
   try {
+    if (!db) {
+      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
+    }
+
     const body = await request.json();
     const { name, email, phone, subject, message } = body;
     

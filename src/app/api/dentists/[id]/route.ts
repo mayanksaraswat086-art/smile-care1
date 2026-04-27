@@ -11,6 +11,10 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    if (!db) {
+      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
+    }
+
     const { id } = await params;
     const dentistRef = doc(db, DENTISTS_COLLECTION, id);
     const dentistDoc = await getDoc(dentistRef);
@@ -34,6 +38,10 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    if (!db) {
+      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
+    }
+
     const { id } = await params;
     const body = await request.json();
     
@@ -64,6 +72,10 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    if (!db) {
+      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
+    }
+
     const { id } = await params;
     
     const dentistRef = doc(db, DENTISTS_COLLECTION, id);
