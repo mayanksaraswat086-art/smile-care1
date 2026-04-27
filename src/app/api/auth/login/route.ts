@@ -9,6 +9,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Email and password are required' }, { status: 400 });
     }
     
+    // Check if Supabase is configured
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      console.error("Supabase ENV missing");
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Server configuration error' 
+      }, { status: 500 });
+    }
+    
     // Sign in with Supabase Auth
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
