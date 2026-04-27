@@ -140,7 +140,7 @@ export default function AdminLogin() {
           </form>
 
           <p className="text-xs text-slate-400 text-center mt-6">
-            Protected by Firebase Authentication · Only authorized personnel
+            Protected by Supabase Authentication · Only authorized personnel
           </p>
         </div>
 

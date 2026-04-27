@@ -1,23 +1,9 @@
-import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { getFirestore, collection, addDoc, Firestore } from 'firebase/firestore';
+import { createClient } from '@supabase/supabase-js';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCIWNWsDBCg8mboVvmIHmOMXT6dilKUGQI",
-  authDomain: "dental-clinic-cd8af.firebaseapp.com",
-  projectId: "dental-clinic-cd8af",
-  storageBucket: "dental-clinic-cd8af.firebasestorage.app",
-  messagingSenderId: "1076584101551",
-  appId: "1:1076584101551:web:9fb1caad8f3c5c62d9c65a"
-};
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://flrsuvqmyrpmmbqsxnqu.supabase.co';
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZscnN1dnFteXJwbW1icXN4bnF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTc2NDMsImV4cCI6MjA5Mjg3MzY0M30.D0_nYfbkcUM4pVdf4AcWdov8l01V2JK3kQrwsRkOt2k';
 
-let app: FirebaseApp;
-if (!getApps().length) {
-  app = initializeApp(firebaseConfig);
-} else {
-  app = getApps()[0];
-}
-
-const db = getFirestore(app);
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const services = [
   {
@@ -28,8 +14,8 @@ const services = [
     description: 'Comprehensive oral examination, X-rays, and professional cleaning to keep your teeth healthy.',
     popular: false,
     color: 'bg-blue-50 text-blue-600',
-    createdAt: new Date(),
-    updatedAt: new Date()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: 'Teeth Whitening',
@@ -39,8 +25,8 @@ const services = [
     description: 'Professional in-office whitening that delivers up to 8 shades brighter in a single session.',
     popular: true,
     color: 'bg-amber-50 text-amber-600',
-    createdAt: new Date(),
-    updatedAt: new Date()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: 'Dental Fillings',
@@ -50,8 +36,8 @@ const services = [
     description: 'Tooth-colored composite fillings that restore cavities seamlessly with your natural enamel.',
     popular: false,
     color: 'bg-teal-50 text-teal-600',
-    createdAt: new Date(),
-    updatedAt: new Date()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: 'Root Canal',
@@ -61,8 +47,8 @@ const services = [
     description: 'Pain-free root canal therapy using rotary endodontics and digital X-ray guidance.',
     popular: false,
     color: 'bg-red-50 text-red-600',
-    createdAt: new Date(),
-    updatedAt: new Date()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: 'Tooth Extraction',
@@ -72,8 +58,8 @@ const services = [
     description: 'Simple and surgical extractions performed with precision and post-op care instructions.',
     popular: false,
     color: 'bg-slate-50 text-slate-600',
-    createdAt: new Date(),
-    updatedAt: new Date()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: 'Dental Implants',
@@ -83,8 +69,8 @@ const services = [
     description: 'Titanium implants that look, feel, and function like natural teeth — built to last decades.',
     popular: true,
     color: 'bg-navy-50 text-navy-600',
-    createdAt: new Date(),
-    updatedAt: new Date()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: 'Braces',
@@ -94,8 +80,8 @@ const services = [
     description: 'Traditional metal and ceramic braces for children and adults with complex alignment needs.',
     popular: false,
     color: 'bg-purple-50 text-purple-600',
-    createdAt: new Date(),
-    updatedAt: new Date()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: 'Invisalign',
@@ -105,8 +91,8 @@ const services = [
     description: 'Clear removable aligners for discreet, comfortable teeth straightening without metal wires.',
     popular: true,
     color: 'bg-cyan-50 text-cyan-600',
-    createdAt: new Date(),
-    updatedAt: new Date()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: 'Veneers',
@@ -116,8 +102,8 @@ const services = [
     description: 'Porcelain veneers crafted to perfect your smile — covering chips, stains, and gaps.',
     popular: false,
     color: 'bg-pink-50 text-pink-600',
-    createdAt: new Date(),
-    updatedAt: new Date()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: 'Crowns',
@@ -127,8 +113,8 @@ const services = [
     description: 'Same-day CEREC crowns available — restore broken or severely decayed teeth in one visit.',
     popular: false,
     color: 'bg-yellow-50 text-yellow-600',
-    createdAt: new Date(),
-    updatedAt: new Date()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: 'Dentures',
@@ -138,8 +124,8 @@ const services = [
     description: 'Full and partial dentures custom-fitted for comfort, function, and natural appearance.',
     popular: false,
     color: 'bg-orange-50 text-orange-600',
-    createdAt: new Date(),
-    updatedAt: new Date()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: 'Emergency Care',
@@ -150,8 +136,8 @@ const services = [
     popular: false,
     color: 'bg-red-50 text-red-700',
     urgent: true,
-    createdAt: new Date(),
-    updatedAt: new Date()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
 ];
 
@@ -164,12 +150,12 @@ const dentists = [
     languages: 'English, Hindi, Gujarati',
     bio: 'Dr. Sharma completed her residency at UCSF and has a special interest in anxiety-free dentistry and smile makeovers.',
     photo: "https://img.rocket.new/generatedImages/rocket_gen_img_11129419a-1772852838420.png",
-    photoAlt: 'Dr. Priya Sharma, female dentist with dark hair wearing white lab coat and stethoscope',
+    photo_alt: 'Dr. Priya Sharma, female dentist with dark hair wearing white lab coat and stethoscope',
     badge: 'Lead Dentist',
-    badgeColor: 'bg-teal-100 text-teal-700',
-    nextSlot: 'Today, 3:30 PM',
-    createdAt: new Date(),
-    updatedAt: new Date()
+    badge_color: 'bg-teal-100 text-teal-700',
+    next_slot: 'Today, 3:30 PM',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: 'Dr. Emeka Okafor',
@@ -179,12 +165,12 @@ const dentists = [
     languages: 'English, Igbo, French',
     bio: 'Dr. Okafor is our implant specialist, trained at Johns Hopkins, with over 800 successful implant placements.',
     photo: "https://img.rocket.new/generatedImages/rocket_gen_img_10337129e-1772074664598.png",
-    photoAlt: 'Dr. Emeka Okafor, male dentist with close-cropped hair in navy scrubs smiling in clinic',
+    photo_alt: 'Dr. Emeka Okafor, male dentist with close-cropped hair in navy scrubs smiling in clinic',
     badge: 'Implant Specialist',
-    badgeColor: 'bg-navy-100 text-navy-700',
-    nextSlot: 'Tomorrow, 10:00 AM',
-    createdAt: new Date(),
-    updatedAt: new Date()
+    badge_color: 'bg-navy-100 text-navy-700',
+    next_slot: 'Tomorrow, 10:00 AM',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: 'Dr. Mei-Ling Chen',
@@ -194,12 +180,12 @@ const dentists = [
     languages: 'English, Mandarin, Cantonese',
     bio: 'Dr. Chen makes dental visits fun for kids and adults alike. Her preventive-first approach reduces long-term treatment needs.',
     photo: "https://img.rocket.new/generatedImages/rocket_gen_img_11ae2c4d2-1772086801082.png",
-    photoAlt: 'Dr. Mei-Ling Chen, female dentist in blue scrubs with friendly smile in pediatric dental office',
+    photo_alt: 'Dr. Mei-Ling Chen, female dentist in blue scrubs with friendly smile in pediatric dental office',
     badge: 'Pediatric Expert',
-    badgeColor: 'bg-amber-100 text-amber-700',
-    nextSlot: 'Mon, 9:00 AM',
-    createdAt: new Date(),
-    updatedAt: new Date()
+    badge_color: 'bg-amber-100 text-amber-700',
+    next_slot: 'Mon, 9:00 AM',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
 ];
 
@@ -210,15 +196,23 @@ async function seedDatabase() {
     // Add Services
     console.log('Adding services...');
     for (const service of services) {
-      await addDoc(collection(db, 'services'), service);
-      console.log(`✅ Added service: ${service.name}`);
+      const { error } = await supabase.from('services').insert(service);
+      if (error) {
+        console.error(`❌ Failed to add service: ${service.name}`, error.message);
+      } else {
+        console.log(`✅ Added service: ${service.name}`);
+      }
     }
     
     // Add Dentists
     console.log('Adding dentists...');
     for (const dentist of dentists) {
-      await addDoc(collection(db, 'dentists'), dentist);
-      console.log(`✅ Added dentist: ${dentist.name}`);
+      const { error } = await supabase.from('dentists').insert(dentist);
+      if (error) {
+        console.error(`❌ Failed to add dentist: ${dentist.name}`, error.message);
+      } else {
+        console.log(`✅ Added dentist: ${dentist.name}`);
+      }
     }
     
     console.log('✅ Database seeded successfully!');

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { Appointment } from '@/types/firebase';
+import { Appointment } from '@/types/supabase';
 
 // GET all appointments
 export async function GET(request: NextRequest) {

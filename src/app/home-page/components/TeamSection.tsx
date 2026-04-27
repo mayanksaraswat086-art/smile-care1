@@ -4,7 +4,7 @@ import Link from 'next/link';
 import useSWR from 'swr';
 import { GraduationCap, Languages, Clock, ArrowRight } from 'lucide-react';
 import AppImage from '@/components/ui/AppImage';
-import { Dentist } from '@/types/firebase';
+import { Dentist } from '@/types/supabase';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 

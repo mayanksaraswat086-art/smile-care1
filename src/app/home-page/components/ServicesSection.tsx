@@ -6,7 +6,7 @@ import {
   Stethoscope, Sparkles, Layers, Zap, Scissors, Anchor,
   AlignCenter, Smile, Gem, Crown, Circle, AlertCircle, ArrowRight
 } from 'lucide-react';
-import { Service } from '@/types/firebase';
+import { Service } from '@/types/supabase';
 
 const categories = ['All', 'Preventive', 'Cosmetic', 'Restorative', 'Orthodontic', 'Surgical', 'Emergency'];
 

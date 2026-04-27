@@ -1,23 +1,9 @@
-import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { getFirestore, collection, addDoc, Firestore } from 'firebase/firestore';
+import { createClient } from '@supabase/supabase-js';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCIWNWsDBCg8mboVvmIHmOMXT6dilKUGQI",
-  authDomain: "dental-clinic-cd8af.firebaseapp.com",
-  projectId: "dental-clinic-cd8af",
-  storageBucket: "dental-clinic-cd8af.firebasestorage.app",
-  messagingSenderId: "1076584101551",
-  appId: "1:1076584101551:web:9fb1caad8f3c5c62d9c65a"
-};
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://flrsuvqmyrpmmbqsxnqu.supabase.co';
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZscnN1dnFteXJwbW1icXN4bnF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTc2NDMsImV4cCI6MjA5Mjg3MzY0M30.D0_nYfbkcUM4pVdf4AcWdov8l01V2JK3kQrwsRkOt2k';
 
-let app: FirebaseApp;
-if (!getApps().length) {
-  app = initializeApp(firebaseConfig);
-} else {
-  app = getApps()[0];
-}
-
-const db = getFirestore(app);
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const queries = [
   {
@@ -27,8 +13,8 @@ const queries = [
     subject: 'Teeth Whitening Inquiry',
     message: 'Hi, I\'m interested in your teeth whitening service. How long does the procedure take and what are the aftercare instructions?',
     status: 'pending',
-    createdAt: new Date(),
-    updatedAt: new Date()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: 'Michael Chen',
@@ -37,8 +23,8 @@ const queries = [
     subject: 'Implant Consultation',
     message: 'I need a dental implant consultation. I lost a tooth in an accident and would like to know about the implant process and cost.',
     status: 'pending',
-    createdAt: new Date(),
-    updatedAt: new Date()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: 'Emily Rodriguez',
@@ -47,8 +33,8 @@ const queries = [
     subject: 'Braces for Teenager',
     message: 'My 14-year-old daughter needs braces. Can you provide information about the different types of braces available and payment plans?',
     status: 'resolved',
-    createdAt: new Date(),
-    updatedAt: new Date()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: 'David Thompson',
@@ -57,8 +43,8 @@ const queries = [
     subject: 'Emergency Tooth Pain',
     message: 'I have severe tooth pain and need to see a dentist as soon as possible. Do you have emergency appointments available today?',
     status: 'pending',
-    createdAt: new Date(),
-    updatedAt: new Date()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: 'Jessica Williams',
@@ -67,8 +53,8 @@ const queries = [
     subject: 'General Checkup',
     message: 'I would like to schedule a general dental checkup and cleaning. It has been over a year since my last visit.',
     status: 'resolved',
-    createdAt: new Date(),
-    updatedAt: new Date()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
 ];
 
@@ -77,8 +63,12 @@ async function seedQueries() {
   
   try {
     for (const query of queries) {
-      await addDoc(collection(db, 'queries'), query);
-      console.log(`✅ Added query: ${query.name} - ${query.subject}`);
+      const { error } = await supabase.from('queries').insert(query);
+      if (error) {
+        console.error(`❌ Failed to add query: ${query.name}`, error.message);
+      } else {
+        console.log(`✅ Added query: ${query.name} - ${query.subject}`);
+      }
     }
     console.log('✅ Contact queries seeded successfully!');
   } catch (error) {

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronRight, Clock, User, CheckCircle, Loader2 } from 'lucide-react';
 import type { BookingData } from './AppointmentBookingFlow';
 import AppImage from '@/components/ui/AppImage';
-import { Dentist, Service } from '@/types/firebase';
+import { Dentist, Service } from '@/types/supabase';
 
 
 // Generate available dates (next 14 days)

@@ -1,168 +1,160 @@
-// Firebase direct seeding script - Works in production
-// Run: node scripts/seed-firebase-direct.js
-// Requires: npm install firebase
+// Supabase direct seeding script - Works in production
+// Run: node scripts/seed-supabase-direct.js
+// Requires: npm install @supabase/supabase-js
 
-const { initializeApp } = require('firebase/app');
-const { getFirestore, collection, addDoc, serverTimestamp } = require('firebase/firestore');
+const { createClient } = require('@supabase/supabase-js');
 
-// Firebase configuration - use environment variables in production
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyDsLeWlngaeA3L310wbr7qkaTFF-lfF_k0',
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'dental-clinic-d8a9c.firebaseapp.com',
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'dental-clinic-d8a9c',
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'dental-clinic-d8a9c.firebasestorage.app',
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '991437778639',
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '1:991437778639:web:38873f32c1bf8cbdd291ba',
-};
+// Supabase configuration - use environment variables in production
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://flrsuvqmyrpmmbqsxnqu.supabase.co';
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZscnN1dnFteXJwbW1icXN4bnF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTc2NDMsImV4cCI6MjA5Mjg3MzY0M30.D0_nYfbkcUM4pVdf4AcWdov8l01V2JK3kQrwsRkOt2k';
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// Initialize Supabase
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const appointments = [
   {
     service: "Dental Checkup",
-    dentistName: "Dr. Sarah Johnson",
+    dentist_name: "Dr. Sarah Johnson",
     date: "2026-04-28",
-    timeSlot: "10:00 AM",
-    patientName: "John Smith",
+    time_slot: "10:00 AM",
+    patient_name: "John Smith",
     email: "john.smith@email.com",
     phone: "+1-555-123-4567",
     notes: "First time patient, slight sensitivity in upper right molars",
-    isExistingPatient: false,
-    consentGiven: true,
-    insuranceProvider: "Blue Cross Blue Shield",
-    memberId: "BCBS123456789",
-    referenceNumber: "SC-ABC123456",
+    is_existing_patient: false,
+    consent_given: true,
+    insurance_provider: "Blue Cross Blue Shield",
+    member_id: "BCBS123456789",
+    reference_number: "SC-ABC123456",
     status: "confirmed",
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     service: "Teeth Whitening",
-    dentistName: "Dr. Emily Davis",
+    dentist_name: "Dr. Emily Davis",
     date: "2026-04-29",
-    timeSlot: "2:30 PM",
-    patientName: "Maria Garcia",
+    time_slot: "2:30 PM",
+    patient_name: "Maria Garcia",
     email: "maria.garcia@email.com",
     phone: "+1-555-987-6543",
     notes: "Wedding in 3 weeks, want bright smile",
-    isExistingPatient: true,
-    consentGiven: true,
-    insuranceProvider: "Aetna",
-    memberId: "AET987654321",
-    referenceNumber: "SC-DEF789012",
+    is_existing_patient: true,
+    consent_given: true,
+    insurance_provider: "Aetna",
+    member_id: "AET987654321",
+    reference_number: "SC-DEF789012",
     status: "pending",
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     service: "Root Canal",
-    dentistName: "Dr. Priya Sharma",
+    dentist_name: "Dr. Priya Sharma",
     date: "2026-04-27",
-    timeSlot: "11:00 AM",
-    patientName: "Robert Johnson",
+    time_slot: "11:00 AM",
+    patient_name: "Robert Johnson",
     email: "robert.j@email.com",
     phone: "+1-555-456-7890",
     notes: "Severe pain in tooth #14, referred by Dr. Chen",
-    isExistingPatient: true,
-    consentGiven: true,
-    insuranceProvider: "Cigna",
-    memberId: "CIG456789012",
-    referenceNumber: "SC-GHI345678",
+    is_existing_patient: true,
+    consent_given: true,
+    insurance_provider: "Cigna",
+    member_id: "CIG456789012",
+    reference_number: "SC-GHI345678",
     status: "confirmed",
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     service: "Dental Implants",
-    dentistName: "Dr. James Wilson",
+    dentist_name: "Dr. James Wilson",
     date: "2026-05-02",
-    timeSlot: "9:00 AM",
-    patientName: "Emily Chen",
+    time_slot: "9:00 AM",
+    patient_name: "Emily Chen",
     email: "emily.chen@email.com",
     phone: "+1-555-321-0987",
     notes: "Missing tooth #19, want implant consultation",
-    isExistingPatient: false,
-    consentGiven: true,
-    insuranceProvider: "MetLife",
-    memberId: "MET321098765",
-    referenceNumber: "SC-JKL901234",
+    is_existing_patient: false,
+    consent_given: true,
+    insurance_provider: "MetLife",
+    member_id: "MET321098765",
+    reference_number: "SC-JKL901234",
     status: "pending",
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     service: "Braces",
-    dentistName: "Dr. Sarah Johnson",
+    dentist_name: "Dr. Sarah Johnson",
     date: "2026-04-30",
-    timeSlot: "3:00 PM",
-    patientName: "Sophie Williams",
+    time_slot: "3:00 PM",
+    patient_name: "Sophie Williams",
     email: "sophie.w@email.com",
     phone: "+1-555-654-3210",
     notes: "Teenager, interested in clear aligners consultation",
-    isExistingPatient: false,
-    consentGiven: true,
-    insuranceProvider: "United Healthcare",
-    memberId: "UHC654321098",
-    referenceNumber: "SC-MNO567890",
+    is_existing_patient: false,
+    consent_given: true,
+    insurance_provider: "United Healthcare",
+    member_id: "UHC654321098",
+    reference_number: "SC-MNO567890",
     status: "confirmed",
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     service: "Emergency Care",
-    dentistName: "Dr. Michael Chen",
+    dentist_name: "Dr. Michael Chen",
     date: "2026-04-26",
-    timeSlot: "8:00 PM",
-    patientName: "David Brown",
+    time_slot: "8:00 PM",
+    patient_name: "David Brown",
     email: "david.brown@email.com",
     phone: "+1-555-789-0123",
     notes: "Broken tooth from accident, bleeding",
-    isExistingPatient: true,
-    consentGiven: true,
-    insuranceProvider: "Delta Dental",
-    memberId: "DEL789012345",
-    referenceNumber: "SC-PQR234567",
+    is_existing_patient: true,
+    consent_given: true,
+    insurance_provider: "Delta Dental",
+    member_id: "DEL789012345",
+    reference_number: "SC-PQR234567",
     status: "completed",
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     service: "Tooth Extraction",
-    dentistName: "Dr. James Wilson",
+    dentist_name: "Dr. James Wilson",
     date: "2026-05-01",
-    timeSlot: "10:30 AM",
-    patientName: "Lisa Anderson",
+    time_slot: "10:30 AM",
+    patient_name: "Lisa Anderson",
     email: "lisa.a@email.com",
     phone: "+1-555-098-7654",
     notes: "Wisdom tooth extraction, lower left",
-    isExistingPatient: false,
-    consentGiven: true,
-    insuranceProvider: "Guardian",
-    memberId: "GRD098765432",
-    referenceNumber: "SC-STU890123",
+    is_existing_patient: false,
+    consent_given: true,
+    insurance_provider: "Guardian",
+    member_id: "GRD098765432",
+    reference_number: "SC-STU890123",
     status: "pending",
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     service: "Veneers",
-    dentistName: "Dr. Emily Davis",
+    dentist_name: "Dr. Emily Davis",
     date: "2026-05-05",
-    timeSlot: "1:00 PM",
-    patientName: "Michael Thompson",
+    time_slot: "1:00 PM",
+    patient_name: "Michael Thompson",
     email: "michael.t@email.com",
     phone: "+1-555-234-5678",
     notes: "Want veneers for front 6 teeth, cosmetic improvement",
-    isExistingPatient: true,
-    consentGiven: true,
-    insuranceProvider: "Humana",
-    memberId: "HUM234567890",
-    referenceNumber: "SC-VWX456789",
+    is_existing_patient: true,
+    consent_given: true,
+    insurance_provider: "Humana",
+    member_id: "HUM234567890",
+    reference_number: "SC-VWX456789",
     status: "confirmed",
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   }
 ];
 
@@ -174,8 +166,8 @@ const queries = [
     subject: "appointment",
     message: "I would like to schedule a dental checkup for next week. I'm a new patient and would prefer an appointment on Friday afternoon if possible.",
     status: "pending",
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: "Kevin Lee",
@@ -184,8 +176,8 @@ const queries = [
     subject: "insurance",
     message: "I have questions about my insurance coverage for dental implants. My provider is Aetna and I want to know what's covered before scheduling a consultation.",
     status: "in-progress",
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: "Sarah Wilson",
@@ -194,8 +186,8 @@ const queries = [
     subject: "billing",
     message: "I received a bill for my recent root canal treatment but I believe there might be an error. The amount seems higher than what I was quoted. Can you please review?",
     status: "resolved",
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: "James Rodriguez",
@@ -204,8 +196,8 @@ const queries = [
     subject: "records",
     message: "I need to transfer my dental records to another dentist. Please let me know the process and any forms I need to complete.",
     status: "pending",
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: "Amanda Foster",
@@ -214,8 +206,8 @@ const queries = [
     subject: "feedback",
     message: "I wanted to share my positive experience with Dr. Sharma. She was very gentle and explained everything clearly. The root canal procedure was much better than I expected. Thank you!",
     status: "resolved",
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: "Christopher Davis",
@@ -224,8 +216,8 @@ const queries = [
     subject: "other",
     message: "I'm interested in learning more about your pediatric dentistry services for my 5-year-old daughter. She's quite nervous about dental visits and I wanted to know if you have experience with anxious children.",
     status: "in-progress",
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: "Rachel Green",
@@ -234,8 +226,8 @@ const queries = [
     subject: "appointment",
     message: "I need to reschedule my upcoming appointment with Dr. Wilson on April 28th. Something came up and I need to move it to May 3rd if possible.",
     status: "pending",
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: "Daniel Kim",
@@ -244,8 +236,8 @@ const queries = [
     subject: "insurance",
     message: "I recently changed jobs and have new insurance through United Healthcare. I want to confirm that you accept this provider and what my coverage will be for preventive care.",
     status: "pending",
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: "Michelle Taylor",
@@ -254,8 +246,8 @@ const queries = [
     subject: "feedback",
     message: "The new website is great but I had some trouble finding the appointment booking form. Maybe make it more prominent on the homepage? Otherwise, excellent service as always!",
     status: "resolved",
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
   {
     name: "Thomas Anderson",
@@ -264,28 +256,36 @@ const queries = [
     subject: "other",
     message: "I'm experiencing some jaw pain and clicking when I open my mouth wide. I'm not sure if this is a dental issue or something else. Should I schedule with a dentist or see a different specialist?",
     status: "in-progress",
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp()
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   }
 ];
 
 async function seed() {
   try {
-    console.log('🌱 Seeding Appointments to Firebase...');
+    console.log('🌱 Seeding Appointments to Supabase...');
     for (const apt of appointments) {
       try {
-        await addDoc(collection(db, 'appointments'), apt);
-        console.log(`✅ Appointment: ${apt.patientName}`);
+        const { error } = await supabase.from('appointments').insert(apt);
+        if (error) {
+          console.error(`❌ Appointment failed: ${apt.patient_name}`, error.message);
+        } else {
+          console.log(`✅ Appointment: ${apt.patient_name}`);
+        }
       } catch (e) {
-        console.error(`❌ Appointment failed: ${apt.patientName}`, e.message);
+        console.error(`❌ Appointment failed: ${apt.patient_name}`, e.message);
       }
     }
     
-    console.log('\n🌱 Seeding Queries to Firebase...');
+    console.log('\n🌱 Seeding Queries to Supabase...');
     for (const q of queries) {
       try {
-        await addDoc(collection(db, 'queries'), q);
-        console.log(`✅ Query: ${q.name}`);
+        const { error } = await supabase.from('queries').insert(q);
+        if (error) {
+          console.error(`❌ Query failed: ${q.name}`, error.message);
+        } else {
+          console.log(`✅ Query: ${q.name}`);
+        }
       } catch (e) {
         console.error(`❌ Query failed: ${q.name}`, e.message);
       }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
@@ -8,12 +9,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Email and password are required' }, { status: 400 });
     }
     
-    // TODO: Implement Supabase Auth
-    // Install @supabase/supabase-js and use supabase.auth.signInWithPassword()
+    // Sign in with Supabase Auth
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      return NextResponse.json({ 
+        success: false, 
+        error: error.message || 'Invalid credentials' 
+      }, { status: 401 });
+    }
+
+    // Return the session token
     return NextResponse.json({ 
-      success: false, 
-      error: 'Supabase Auth not configured. Please set up Supabase Auth in the dashboard.' 
-    }, { status: 501 });
+      success: true, 
+      data: {
+        token: data.session.access_token,
+        email: data.user.email,
+      }
+    });
   } catch (error: any) {
     console.error('Login error:', error);
     return NextResponse.json({ 

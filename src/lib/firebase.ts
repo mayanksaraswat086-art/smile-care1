@@ -1,31 +1,15 @@
-import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { getAuth, Auth } from 'firebase/auth';
-import { getFirestore, Firestore } from 'firebase/firestore';
+import { createClient } from '@supabase/supabase-js';
 
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '',
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '',
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || '',
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '',
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '',
-};
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://flrsuvqmyrpmmbqsxnqu.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZscnN1dnFteXJwbW1icXN4bnF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTc2NDMsImV4cCI6MjA5Mjg3MzY0M30.D0_nYfbkcUM4pVdf4AcWdov8l01V2JK3kQrwsRkOt2k';
 
-// Initialize Firebase with fallback for build time
-let app: FirebaseApp | null = null;
+// Initialize Supabase client
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-if (typeof window !== 'undefined' && firebaseConfig.projectId) {
-  try {
-    app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
-  } catch (error) {
-    console.error('Firebase initialization error:', error);
-  }
-}
+// Export auth (Supabase auth)
+export const auth = supabase.auth;
 
-// Initialize Auth (null on server/build time)
-export const auth: Auth | null = app ? getAuth(app) : null;
+// Export db (Supabase database)
+export const db = supabase;
 
-// Initialize Firestore (null on server/build time)
-export const db: Firestore | null = app ? getFirestore(app) : null;
-
-export default app;
+export default supabase;

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { Dentist } from '@/types/firebase';
+import { Dentist } from '@/types/supabase';
 
 // GET all dentists
 export async function GET() {

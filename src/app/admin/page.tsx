@@ -28,7 +28,7 @@ import {
 } from 'lucide-react';
 import AppLogo from '@/components/ui/AppLogo';
 import { toast } from 'sonner';
-import { Service, Dentist, ContactQuery, Appointment } from '@/types/firebase';
+import { Service, Dentist, ContactQuery, Appointment } from '@/types/supabase';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { 
   BarChart, 

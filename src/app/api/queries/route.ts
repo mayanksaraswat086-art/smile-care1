@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { ContactQuery } from '@/types/firebase';
+import { ContactQuery } from '@/types/supabase';
 
 // GET all queries
 export async function GET() {
