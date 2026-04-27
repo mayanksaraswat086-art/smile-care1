@@ -4,6 +4,10 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 export async function POST(request: NextRequest) {
   try {
+    if (!auth) {
+      return NextResponse.json({ success: false, error: 'Auth not available' }, { status: 503 });
+    }
+
     const { email, password } = await request.json();
     
     if (!email || !password) {
