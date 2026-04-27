@@ -11,15 +11,15 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase only if config is available (skip during build)
-const app: FirebaseApp = firebaseConfig.projectId && !getApps().length
+// Initialize Firebase
+const app: FirebaseApp = !getApps().length && firebaseConfig.projectId
   ? initializeApp(firebaseConfig)
   : getApps()[0];
 
-// Initialize Auth (client-side only usage)
-export const auth: Auth = app ? getAuth(app) : null as any;
+// Initialize Auth
+export const auth: Auth = getAuth(app);
 
-// Initialize Firestore (works on both client and server)
-export const db: Firestore = app ? getFirestore(app) : null as any;
+// Initialize Firestore
+export const db: Firestore = getFirestore(app);
 
 export default app;
