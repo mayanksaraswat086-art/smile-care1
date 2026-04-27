@@ -1210,6 +1210,14 @@ function AdminPanelContent() {
                 const badge = (form.elements.namedItem('badge') as HTMLInputElement).value.trim();
                 const badgeColor = (form.elements.namedItem('badgeColor') as HTMLInputElement).value.trim();
                 const nextSlot = (form.elements.namedItem('nextSlot') as HTMLInputElement).value.trim();
+                const education = (form.elements.namedItem('education') as HTMLTextAreaElement).value.trim();
+                const certifications = (form.elements.namedItem('certifications') as HTMLTextAreaElement).value.trim();
+                const achievements = (form.elements.namedItem('achievements') as HTMLTextAreaElement).value.trim();
+                const about = (form.elements.namedItem('about') as HTMLTextAreaElement).value.trim();
+                const services = (form.elements.namedItem('services') as HTMLTextAreaElement).value.trim();
+                const clinicHours = (form.elements.namedItem('clinicHours') as HTMLTextAreaElement).value.trim();
+                const rating = (form.elements.namedItem('rating') as HTMLInputElement).value;
+                const reviewCount = (form.elements.namedItem('reviewCount') as HTMLInputElement).value;
                 
                 if (!name || !title || !specialization || !experience || !languages || !bio) {
                   toast.error('Please fill in all required fields');
@@ -1228,6 +1236,14 @@ function AdminPanelContent() {
                   badge,
                   badgeColor,
                   nextSlot,
+                  education: education || '',
+                  certifications: certifications || '',
+                  achievements: achievements || '',
+                  about: about || '',
+                  services: services || '',
+                  clinicHours: clinicHours || '',
+                  rating: rating ? Number(rating) : 0,
+                  reviewCount: reviewCount ? Number(reviewCount) : 0,
                 };
                 
                 if (editingDentist) {
@@ -1341,6 +1357,97 @@ function AdminPanelContent() {
                   placeholder="Today, 3:30 PM"
                   className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
                 />
+              </div>
+              
+              {/* Profile Detail Fields */}
+              <div className="border-t border-slate-200 pt-4 mt-4">
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">Profile Details (shown on dentist page)</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-navy-700 mb-1">About</label>
+                <textarea 
+                  name="about"
+                  defaultValue={editingDentist?.about}
+                  rows={4}
+                  placeholder="Detailed about section for the dentist profile page..."
+                  className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-navy-700 mb-1">Education</label>
+                <textarea 
+                  name="education"
+                  defaultValue={editingDentist?.education}
+                  rows={3}
+                  placeholder="Harvard School of Dental Medicine - DDS&#10;Stanford University - BS Biology"
+                  className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-navy-700 mb-1">Certifications <span className="text-slate-400 font-normal">(comma separated)</span></label>
+                <textarea 
+                  name="certifications"
+                  defaultValue={editingDentist?.certifications}
+                  rows={2}
+                  placeholder="Board Certified Orthodontist, Invisalign Certified, Laser Dentistry Certified"
+                  className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-navy-700 mb-1">Achievements <span className="text-slate-400 font-normal">(comma separated)</span></label>
+                <textarea 
+                  name="achievements"
+                  defaultValue={editingDentist?.achievements}
+                  rows={2}
+                  placeholder="Top Dentist 2024, Published 15+ research papers, Keynote Speaker ADA 2023"
+                  className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-navy-700 mb-1">Services Offered <span className="text-slate-400 font-normal">(comma separated)</span></label>
+                <textarea 
+                  name="services"
+                  defaultValue={editingDentist?.services}
+                  rows={2}
+                  placeholder="Braces, Clear Aligners, Retainers, Orthodontic Consultation"
+                  className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-navy-700 mb-1">Clinic Hours</label>
+                <textarea 
+                  name="clinicHours"
+                  defaultValue={editingDentist?.clinicHours}
+                  rows={3}
+                  placeholder="Mon-Fri: 9:00 AM - 6:00 PM&#10;Saturday: 9:00 AM - 2:00 PM&#10;Sunday: Closed"
+                  className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-navy-700 mb-1">Rating (0-5)</label>
+                  <input 
+                    name="rating" 
+                    type="number"
+                    min="0"
+                    max="5"
+                    step="0.1"
+                    defaultValue={editingDentist?.rating || ''}
+                    placeholder="4.8"
+                    className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-navy-700 mb-1">Review Count</label>
+                  <input 
+                    name="reviewCount" 
+                    type="number"
+                    min="0"
+                    defaultValue={editingDentist?.reviewCount || ''}
+                    placeholder="120"
+                    className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+                  />
+                </div>
               </div>
               <div className="flex gap-3 pt-4">
                 <button 

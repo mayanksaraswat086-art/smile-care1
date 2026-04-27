@@ -27,6 +27,14 @@ export interface Dentist {
   badge: string;
   badgeColor: string;
   nextSlot?: string;
+  education?: string;
+  certifications?: string;
+  achievements?: string;
+  about?: string;
+  services?: string;
+  clinicHours?: string;
+  rating?: number;
+  reviewCount?: number;
   createdAt: Date;
   updatedAt: Date;
 }

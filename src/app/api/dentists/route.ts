@@ -36,7 +36,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, title, specialization, experience, languages, bio, photo, photoAlt, badge, badgeColor, nextSlot } = body;
+    const { name, title, specialization, experience, languages, bio, photo, photoAlt, badge, badgeColor, nextSlot, education, certifications, achievements, about, services, clinicHours, rating, reviewCount } = body;
     
     if (!name || !title || !specialization || !experience || !languages || !bio || !photo) {
       return NextResponse.json({ success: false, error: 'Missing required fields' }, { status: 400 });
@@ -54,6 +54,14 @@ export async function POST(request: NextRequest) {
       badge: badge || 'Dentist',
       badgeColor: badgeColor || 'bg-teal-100 text-teal-700',
       nextSlot: nextSlot || '',
+      education: education || '',
+      certifications: certifications || '',
+      achievements: achievements || '',
+      about: about || '',
+      services: services || '',
+      clinicHours: clinicHours || '',
+      rating: rating || 0,
+      reviewCount: reviewCount || 0,
       createdAt: new Date(),
       updatedAt: new Date()
     };

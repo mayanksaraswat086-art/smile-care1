@@ -10,9 +10,9 @@ const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function TeamSection() {
   const { data, error, isLoading } = useSWR('/api/dentists', fetcher, {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-    dedupingInterval: 60000
+    revalidateOnFocus: true,
+    revalidateOnReconnect: true,
+    dedupingInterval: 5000
   });
 
   const dentists = data?.data || [];
@@ -60,7 +60,7 @@ export default function TeamSection() {
         {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8">
           {dentists?.map((doc: Dentist) =>
-          <div key={doc?.id} className="bg-white rounded-3xl overflow-hidden shadow-card card-hover group">
+          <Link key={doc?.id} href={`/dentists/${doc?.id}`} className="bg-white rounded-3xl overflow-hidden shadow-card card-hover group block">
               {/* Photo */}
               <div className="relative h-56 overflow-hidden">
                 <AppImage
@@ -100,15 +100,14 @@ export default function TeamSection() {
                   </div>
                 </div>
 
-                <Link
-                href="/appointments-page"
+                <span
                 className="flex items-center justify-center gap-2 w-full py-2.5 text-sm font-semibold text-white bg-navy-600 rounded-xl hover:bg-navy-700 active:scale-95 transition-all duration-150">
 
-                  Book with {doc?.name?.split(' ')?.[1]}
+                  View Profile
                   <ArrowRight size={15} />
-                </Link>
+                </span>
               </div>
-            </div>
+            </Link>
           )}
         </div>
 
