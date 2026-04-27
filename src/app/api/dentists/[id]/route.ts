@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/firebase';
-import { doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
+import { supabase } from '@/lib/supabase';
 import { Dentist } from '@/types/firebase';
-
-const DENTISTS_COLLECTION = 'dentists';
 
 // GET single dentist by ID
 export async function GET(
@@ -11,19 +8,18 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    if (!db) {
-      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
-    }
-
     const { id } = await params;
-    const dentistRef = doc(db, DENTISTS_COLLECTION, id);
-    const dentistDoc = await getDoc(dentistRef);
+    const { data, error } = await supabase
+      .from('dentists')
+      .select('*')
+      .eq('id', id)
+      .single();
 
-    if (!dentistDoc.exists()) {
+    if (error || !data) {
       return NextResponse.json({ success: false, error: 'Dentist not found' }, { status: 404 });
     }
 
-    const dentist = { id: dentistDoc.id, ...dentistDoc.data() } as Dentist;
+    const dentist = data as Dentist;
 
     return NextResponse.json({ success: true, data: dentist });
   } catch (error) {
@@ -38,28 +34,37 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    if (!db) {
-      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
-    }
-
     const { id } = await params;
     const body = await request.json();
     
-    const dentistRef = doc(db, DENTISTS_COLLECTION, id);
-    const dentistDoc = await getDoc(dentistRef);
+    const { data: existing } = await supabase
+      .from('dentists')
+      .select('id')
+      .eq('id', id)
+      .single();
     
-    if (!dentistDoc.exists()) {
+    if (!existing) {
       return NextResponse.json({ success: false, error: 'Dentist not found' }, { status: 404 });
     }
     
     const updateData = {
       ...body,
-      updatedAt: new Date()
+      updated_at: new Date()
     };
     
-    await updateDoc(dentistRef, updateData);
+    const { data, error } = await supabase
+      .from('dentists')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
     
-    return NextResponse.json({ success: true, data: { id, ...updateData } });
+    if (error) {
+      console.error('Error updating dentist:', error);
+      return NextResponse.json({ success: false, error: 'Failed to update dentist' }, { status: 500 });
+    }
+    
+    return NextResponse.json({ success: true, data: data });
   } catch (error) {
     console.error('Error updating dentist:', error);
     return NextResponse.json({ success: false, error: 'Failed to update dentist' }, { status: 500 });
@@ -72,20 +77,27 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    if (!db) {
-      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
-    }
-
     const { id } = await params;
     
-    const dentistRef = doc(db, DENTISTS_COLLECTION, id);
-    const dentistDoc = await getDoc(dentistRef);
+    const { data: existing } = await supabase
+      .from('dentists')
+      .select('id')
+      .eq('id', id)
+      .single();
     
-    if (!dentistDoc.exists()) {
+    if (!existing) {
       return NextResponse.json({ success: false, error: 'Dentist not found' }, { status: 404 });
     }
     
-    await deleteDoc(dentistRef);
+    const { error } = await supabase
+      .from('dentists')
+      .delete()
+      .eq('id', id);
+    
+    if (error) {
+      console.error('Error deleting dentist:', error);
+      return NextResponse.json({ success: false, error: 'Failed to delete dentist' }, { status: 500 });
+    }
     
     return NextResponse.json({ success: true, message: 'Dentist deleted successfully' });
   } catch (error) {

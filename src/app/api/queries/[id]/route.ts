@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/firebase';
-import { doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
-
-const QUERIES_COLLECTION = 'queries';
+import { supabase } from '@/lib/supabase';
 
 // PUT update query
 export async function PUT(
@@ -10,28 +7,37 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    if (!db) {
-      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
-    }
-
     const { id } = await params;
     const body = await request.json();
     
-    const queryRef = doc(db, QUERIES_COLLECTION, id);
-    const queryDoc = await getDoc(queryRef);
+    const { data: existing } = await supabase
+      .from('queries')
+      .select('id')
+      .eq('id', id)
+      .single();
     
-    if (!queryDoc.exists()) {
+    if (!existing) {
       return NextResponse.json({ success: false, error: 'Query not found' }, { status: 404 });
     }
     
     const updateData = {
       ...body,
-      updatedAt: new Date()
+      updated_at: new Date()
     };
     
-    await updateDoc(queryRef, updateData);
+    const { data, error } = await supabase
+      .from('queries')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
     
-    return NextResponse.json({ success: true, data: { id, ...updateData } });
+    if (error) {
+      console.error('Error updating query:', error);
+      return NextResponse.json({ success: false, error: 'Failed to update query' }, { status: 500 });
+    }
+    
+    return NextResponse.json({ success: true, data: data });
   } catch (error) {
     console.error('Error updating query:', error);
     return NextResponse.json({ success: false, error: 'Failed to update query' }, { status: 500 });
@@ -44,20 +50,27 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    if (!db) {
-      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
-    }
-
     const { id } = await params;
     
-    const queryRef = doc(db, QUERIES_COLLECTION, id);
-    const queryDoc = await getDoc(queryRef);
+    const { data: existing } = await supabase
+      .from('queries')
+      .select('id')
+      .eq('id', id)
+      .single();
     
-    if (!queryDoc.exists()) {
+    if (!existing) {
       return NextResponse.json({ success: false, error: 'Query not found' }, { status: 404 });
     }
     
-    await deleteDoc(queryRef);
+    const { error } = await supabase
+      .from('queries')
+      .delete()
+      .eq('id', id);
+    
+    if (error) {
+      console.error('Error deleting query:', error);
+      return NextResponse.json({ success: false, error: 'Failed to delete query' }, { status: 500 });
+    }
     
     return NextResponse.json({ success: true, message: 'Query deleted successfully' });
   } catch (error) {

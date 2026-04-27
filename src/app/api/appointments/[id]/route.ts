@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/firebase';
-import { doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
-
-const APPOINTMENTS_COLLECTION = 'appointments';
+import { supabase } from '@/lib/supabase';
 
 // PUT update appointment
 export async function PUT(
@@ -10,28 +7,37 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    if (!db) {
-      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
-    }
-
     const { id } = await params;
     const body = await request.json();
     
-    const appointmentRef = doc(db, APPOINTMENTS_COLLECTION, id);
-    const appointmentDoc = await getDoc(appointmentRef);
+    const { data: existing } = await supabase
+      .from('appointments')
+      .select('id')
+      .eq('id', id)
+      .single();
     
-    if (!appointmentDoc.exists()) {
+    if (!existing) {
       return NextResponse.json({ success: false, error: 'Appointment not found' }, { status: 404 });
     }
     
     const updateData = {
       ...body,
-      updatedAt: new Date()
+      updated_at: new Date()
     };
     
-    await updateDoc(appointmentRef, updateData);
+    const { data, error } = await supabase
+      .from('appointments')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
     
-    return NextResponse.json({ success: true, data: { id, ...updateData } });
+    if (error) {
+      console.error('Error updating appointment:', error);
+      return NextResponse.json({ success: false, error: 'Failed to update appointment' }, { status: 500 });
+    }
+    
+    return NextResponse.json({ success: true, data: data });
   } catch (error) {
     console.error('Error updating appointment:', error);
     return NextResponse.json({ success: false, error: 'Failed to update appointment' }, { status: 500 });
@@ -44,20 +50,27 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    if (!db) {
-      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
-    }
-
     const { id } = await params;
     
-    const appointmentRef = doc(db, APPOINTMENTS_COLLECTION, id);
-    const appointmentDoc = await getDoc(appointmentRef);
+    const { data: existing } = await supabase
+      .from('appointments')
+      .select('id')
+      .eq('id', id)
+      .single();
     
-    if (!appointmentDoc.exists()) {
+    if (!existing) {
       return NextResponse.json({ success: false, error: 'Appointment not found' }, { status: 404 });
     }
     
-    await deleteDoc(appointmentRef);
+    const { error } = await supabase
+      .from('appointments')
+      .delete()
+      .eq('id', id);
+    
+    if (error) {
+      console.error('Error deleting appointment:', error);
+      return NextResponse.json({ success: false, error: 'Failed to delete appointment' }, { status: 500 });
+    }
     
     return NextResponse.json({ success: true, message: 'Appointment deleted successfully' });
   } catch (error) {

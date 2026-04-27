@@ -1,25 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/firebase';
-import { collection, getDocs, addDoc, query, orderBy } from 'firebase/firestore';
+import { supabase } from '@/lib/supabase';
 import { Dentist } from '@/types/firebase';
-
-const DENTISTS_COLLECTION = 'dentists';
 
 // GET all dentists
 export async function GET() {
   try {
-    if (!db) {
-      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
-    }
-
-    const dentistsRef = collection(db, DENTISTS_COLLECTION);
-    const q = query(dentistsRef, orderBy('createdAt', 'desc'));
-    const snapshot = await getDocs(q);
+    const { data, error } = await supabase
+      .from('dentists')
+      .select('*')
+      .order('created_at', { ascending: false });
     
-    const dentists = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })) as Dentist[];
+    if (error) {
+      console.error('Error fetching dentists:', error);
+      return NextResponse.json({ success: false, error: 'Failed to fetch dentists' }, { status: 500 });
+    }
+    
+    const dentists = data as Dentist[];
     
     return NextResponse.json(
       { success: true, data: dentists },
@@ -39,10 +35,6 @@ export async function GET() {
 // POST create new dentist
 export async function POST(request: NextRequest) {
   try {
-    if (!db) {
-      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
-    }
-
     const body = await request.json();
     const { name, title, specialization, experience, languages, bio, photo, photoAlt, badge, badgeColor, nextSlot, education, certifications, achievements, about, services, clinicHours, rating, reviewCount } = body;
     
@@ -58,25 +50,34 @@ export async function POST(request: NextRequest) {
       languages,
       bio,
       photo,
-      photoAlt: photoAlt || '',
+      photo_alt: photoAlt || '',
       badge: badge || 'Dentist',
-      badgeColor: badgeColor || 'bg-teal-100 text-teal-700',
-      nextSlot: nextSlot || '',
+      badge_color: badgeColor || 'bg-teal-100 text-teal-700',
+      next_slot: nextSlot || '',
       education: education || '',
       certifications: certifications || '',
       achievements: achievements || '',
       about: about || '',
       services: services || '',
-      clinicHours: clinicHours || '',
+      clinic_hours: clinicHours || '',
       rating: rating || 0,
-      reviewCount: reviewCount || 0,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      review_count: reviewCount || 0,
+      created_at: new Date(),
+      updated_at: new Date()
     };
     
-    const docRef = await addDoc(collection(db, DENTISTS_COLLECTION), dentistData);
+    const { data, error } = await supabase
+      .from('dentists')
+      .insert(dentistData)
+      .select()
+      .single();
     
-    return NextResponse.json({ success: true, data: { id: docRef.id, ...dentistData } }, { status: 201 });
+    if (error) {
+      console.error('Error creating dentist:', error);
+      return NextResponse.json({ success: false, error: 'Failed to create dentist' }, { status: 500 });
+    }
+    
+    return NextResponse.json({ success: true, data: data }, { status: 201 });
   } catch (error) {
     console.error('Error creating dentist:', error);
     return NextResponse.json({ success: false, error: 'Failed to create dentist' }, { status: 500 });

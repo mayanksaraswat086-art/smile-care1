@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/firebase';
-import { doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
-
-const SERVICES_COLLECTION = 'services';
+import { supabase } from '@/lib/supabase';
 
 // PUT update service
 export async function PUT(
@@ -10,28 +7,37 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    if (!db) {
-      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
-    }
-
     const { id } = await params;
     const body = await request.json();
     
-    const serviceRef = doc(db, SERVICES_COLLECTION, id);
-    const serviceDoc = await getDoc(serviceRef);
+    const { data: existing } = await supabase
+      .from('services')
+      .select('id')
+      .eq('id', id)
+      .single();
     
-    if (!serviceDoc.exists()) {
+    if (!existing) {
       return NextResponse.json({ success: false, error: 'Service not found' }, { status: 404 });
     }
     
     const updateData = {
       ...body,
-      updatedAt: new Date()
+      updated_at: new Date()
     };
     
-    await updateDoc(serviceRef, updateData);
+    const { data, error } = await supabase
+      .from('services')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
     
-    return NextResponse.json({ success: true, data: { id, ...updateData } });
+    if (error) {
+      console.error('Error updating service:', error);
+      return NextResponse.json({ success: false, error: 'Failed to update service' }, { status: 500 });
+    }
+    
+    return NextResponse.json({ success: true, data: data });
   } catch (error) {
     console.error('Error updating service:', error);
     return NextResponse.json({ success: false, error: 'Failed to update service' }, { status: 500 });
@@ -44,20 +50,27 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    if (!db) {
-      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
-    }
-
     const { id } = await params;
     
-    const serviceRef = doc(db, SERVICES_COLLECTION, id);
-    const serviceDoc = await getDoc(serviceRef);
+    const { data: existing } = await supabase
+      .from('services')
+      .select('id')
+      .eq('id', id)
+      .single();
     
-    if (!serviceDoc.exists()) {
+    if (!existing) {
       return NextResponse.json({ success: false, error: 'Service not found' }, { status: 404 });
     }
     
-    await deleteDoc(serviceRef);
+    const { error } = await supabase
+      .from('services')
+      .delete()
+      .eq('id', id);
+    
+    if (error) {
+      console.error('Error deleting service:', error);
+      return NextResponse.json({ success: false, error: 'Failed to delete service' }, { status: 500 });
+    }
     
     return NextResponse.json({ success: true, message: 'Service deleted successfully' });
   } catch (error) {

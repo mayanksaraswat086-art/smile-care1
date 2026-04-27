@@ -1,26 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/firebase';
-import { collection, getDocs, addDoc, query, orderBy, where } from 'firebase/firestore';
+import { supabase } from '@/lib/supabase';
 import { Appointment } from '@/types/firebase';
-
-const APPOINTMENTS_COLLECTION = 'appointments';
 
 // GET all appointments
 export async function GET(request: NextRequest) {
   try {
-    if (!db) {
-      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
-    }
-
-    const { searchParams } = new URL(request.url);
-    const appointmentsRef = collection(db, APPOINTMENTS_COLLECTION);
-    const q = query(appointmentsRef, orderBy('createdAt', 'desc'));
-    const snapshot = await getDocs(q);
+    const { data, error } = await supabase
+      .from('appointments')
+      .select('*')
+      .order('created_at', { ascending: false });
     
-    const appointments = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })) as Appointment[];
+    if (error) {
+      console.error('Error fetching appointments:', error);
+      return NextResponse.json({ success: false, error: 'Failed to fetch appointments' }, { status: 500 });
+    }
+    
+    const appointments = data as Appointment[];
     
     return NextResponse.json({ success: true, data: appointments });
   } catch (error) {
@@ -32,10 +27,6 @@ export async function GET(request: NextRequest) {
 // POST create new appointment
 export async function POST(request: NextRequest) {
   try {
-    if (!db) {
-      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
-    }
-
     const body = await request.json();
     const { 
       service, 
@@ -62,26 +53,33 @@ export async function POST(request: NextRequest) {
     
     const appointmentData = {
       service,
-      dentistName,
+      dentist_name: dentistName,
       date,
-      timeSlot,
-      patientName,
+      time_slot: timeSlot,
+      patient_name: patientName,
       email,
       phone,
       notes: notes || '',
-      isExistingPatient: isExistingPatient || false,
-      consentGiven,
-      insuranceProvider: insuranceProvider || '',
-      memberId: memberId || '',
-      referenceNumber: ref,
-      status: 'pending' as const,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      is_existing_patient: isExistingPatient || false,
+      consent_given: consentGiven,
+      insurance_provider: insuranceProvider || '',
+      member_id: memberId || '',
+      reference_number: ref,
+      status: 'pending'
     };
     
-    const docRef = await addDoc(collection(db, APPOINTMENTS_COLLECTION), appointmentData);
+    const { data, error } = await supabase
+      .from('appointments')
+      .insert(appointmentData)
+      .select()
+      .single();
     
-    return NextResponse.json({ success: true, data: { id: docRef.id, ...appointmentData } }, { status: 201 });
+    if (error) {
+      console.error('Error creating appointment:', error);
+      return NextResponse.json({ success: false, error: 'Failed to create appointment' }, { status: 500 });
+    }
+    
+    return NextResponse.json({ success: true, data: data }, { status: 201 });
   } catch (error) {
     console.error('Error creating appointment:', error);
     return NextResponse.json({ success: false, error: 'Failed to create appointment' }, { status: 500 });

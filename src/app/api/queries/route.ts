@@ -1,25 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/firebase';
-import { collection, getDocs, addDoc, query, orderBy } from 'firebase/firestore';
+import { supabase } from '@/lib/supabase';
 import { ContactQuery } from '@/types/firebase';
-
-const QUERIES_COLLECTION = 'queries';
 
 // GET all queries
 export async function GET() {
   try {
-    if (!db) {
-      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
-    }
-
-    const queriesRef = collection(db, QUERIES_COLLECTION);
-    const q = query(queriesRef, orderBy('createdAt', 'desc'));
-    const snapshot = await getDocs(q);
+    const { data, error } = await supabase
+      .from('queries')
+      .select('*')
+      .order('created_at', { ascending: false });
     
-    const queries = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })) as ContactQuery[];
+    if (error) {
+      console.error('Error fetching queries:', error);
+      return NextResponse.json({ success: false, error: 'Failed to fetch queries' }, { status: 500 });
+    }
+    
+    const queries = data as ContactQuery[];
     
     return NextResponse.json({ success: true, data: queries });
   } catch (error) {
@@ -31,10 +27,6 @@ export async function GET() {
 // POST create new query
 export async function POST(request: NextRequest) {
   try {
-    if (!db) {
-      return NextResponse.json({ success: false, error: 'Database not available' }, { status: 503 });
-    }
-
     const body = await request.json();
     const { name, email, phone, subject, message } = body;
     
@@ -45,17 +37,23 @@ export async function POST(request: NextRequest) {
     const queryData = {
       name,
       email,
-      phone: phone || '',
+      phone,
       subject,
-      message,
-      status: 'pending' as const,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      message
     };
     
-    const docRef = await addDoc(collection(db, QUERIES_COLLECTION), queryData);
+    const { data, error } = await supabase
+      .from('queries')
+      .insert(queryData)
+      .select()
+      .single();
     
-    return NextResponse.json({ success: true, data: { id: docRef.id, ...queryData } }, { status: 201 });
+    if (error) {
+      console.error('Error creating query:', error);
+      return NextResponse.json({ success: false, error: 'Failed to create query' }, { status: 500 });
+    }
+    
+    return NextResponse.json({ success: true, data: data }, { status: 201 });
   } catch (error) {
     console.error('Error creating query:', error);
     return NextResponse.json({ success: false, error: 'Failed to create query' }, { status: 500 });

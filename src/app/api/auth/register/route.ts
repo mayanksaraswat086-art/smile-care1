@@ -1,13 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 export async function POST(request: NextRequest) {
   try {
-    if (!auth) {
-      return NextResponse.json({ success: false, error: 'Auth not available' }, { status: 503 });
-    }
-
     const { email, password } = await request.json();
     
     if (!email || !password) {
@@ -18,24 +12,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Password must be at least 6 characters' }, { status: 400 });
     }
     
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const token = await userCredential.user.getIdToken();
-    
+    // TODO: Implement Supabase Auth
+    // Install @supabase/supabase-js and use supabase.auth.signUp()
     return NextResponse.json({ 
-      success: true, 
-      data: { 
-        uid: userCredential.user.uid,
-        email: userCredential.user.email,
-        token 
-      } 
-    }, { status: 201 });
+      success: false, 
+      error: 'Supabase Auth not configured. Please set up Supabase Auth in the dashboard.' 
+    }, { status: 501 });
   } catch (error: any) {
     console.error('Registration error:', error);
     return NextResponse.json({ 
       success: false, 
-      error: error.code === 'auth/email-already-in-use' 
-        ? 'Email already registered' 
-        : 'Registration failed' 
+      error: 'Registration failed' 
     }, { status: 400 });
   }
 }
